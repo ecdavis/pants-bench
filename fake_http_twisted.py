@@ -23,5 +23,5 @@ class FakeHTTP(Protocol):
 class FakeHTTPFactory(Factory):
     protocol = FakeHTTP
 
-reactor.listenTCP(8080, PlainFactory(), 1024)
+reactor.listenTCP(8080, FakeHTTPFactory(), 1024)
 reactor.run()
