@@ -32,7 +32,7 @@ def on_accept(sock, fd, events):
             return
         connection.setblocking(0)
         stream = iostream.IOStream(connection)
-        stream.read_until('\r\n\r\n', functools.partial(do_response, stream))
+        stream.read_until('\r\n\r\n', functools.partial(on_read, stream))
 
 if __name__ == '__main__':
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
