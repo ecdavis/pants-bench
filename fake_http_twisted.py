@@ -9,6 +9,10 @@ measure a framework's performance without involving the HTTP stack.
 from twisted.internet.protocol import Factory, Protocol
 from twisted.internet import reactor
 
+RESPONSE_DATA = "Hello, World!" * 512
+RESPONSE_LENGTH = len(RESPONSE_DATA)
+RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s\r\n" % (RESPONSE_LENGTH, RESPONSE_DATA)
+
 class FakeHTTP(Protocol):
     def connectionMade(self):
         self.buf = ''
@@ -17,7 +21,7 @@ class FakeHTTP(Protocol):
         self.buf += data
         if '\r\n\r\n' in self.buf:
             self.buf = ''
-            self.transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
+            self.transport.write(RESPONSE)
 
 class FakeHTTPFactory(Factory):
     protocol = FakeHTTP

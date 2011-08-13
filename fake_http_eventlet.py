@@ -14,10 +14,15 @@ def on_connect(sock):
         while '\r\n\r\n' not in buf:
             data = sock.readline()
             if not data:
+                sock.close()
                 return
             buf += data
-        sock.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
-        sock.flush()
+        try:
+            sock.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
+            sock.flush()
+        except:
+            break
+    sock.close()
 
 server = eventlet.listen(('', 8080))
 pool = eventlet.GreenPool()

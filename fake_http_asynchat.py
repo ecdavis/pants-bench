@@ -12,6 +12,9 @@ import cProfile
 import pstats
 import socket
 
+RESPONSE_DATA = "Hello, World!" * 512
+RESPONSE_LENGTH = len(RESPONSE_DATA)
+RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s\r\n" % (RESPONSE_LENGTH, RESPONSE_DATA)
 
 class RequestHandler(asynchat.async_chat):
     def __init__(self, sock):
@@ -22,7 +25,7 @@ class RequestHandler(asynchat.async_chat):
         pass
 
     def found_terminator(self):
-        self.push("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
+        self.push(RESPONSE)
 
 class Server(asyncore.dispatcher):
     def __init__(self, host, port):
