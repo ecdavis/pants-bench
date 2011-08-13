@@ -15,10 +15,9 @@ class FakeHTTP(Protocol):
     
     def dataReceived(self, data):
         self.buf += data
-        mark = self.buf.find('\r\n\r\n')
-        if mark != -1:
-            self.buf = self.buf[mark+4:]
-        self.transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
+        if '\r\n\r\n' in self.buf:
+            self.buf = ''
+            self.transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
 
 class FakeHTTPFactory(Factory):
     protocol = FakeHTTP

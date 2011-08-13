@@ -1,3 +1,11 @@
+"""
+A fake HTTP server using eventlet.
+
+For each \r\n\r\n-delimited string it receives, this server will send a
+very short HTTP response. Useful for using HTTP benchmarking tools to
+measure a framework's performance without involving the HTTP stack.
+"""
+
 import eventlet
 
 def on_connect(sock):
@@ -8,7 +16,6 @@ def on_connect(sock):
             if not data:
                 return
             buf += data
-        buf = buf[buf.find('\r\n\r\n')+4:]
         sock.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
         sock.flush()
 
