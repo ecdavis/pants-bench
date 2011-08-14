@@ -17,9 +17,9 @@ import socket
 
 from tornado import ioloop, iostream
 
-RESPONSE_DATA = "0123456789" * 2048
+RESPONSE_DATA = "0123456789" * 1
 RESPONSE_LENGTH = len(RESPONSE_DATA)
-RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s\r\n" % (RESPONSE_LENGTH, RESPONSE_DATA)
+RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s" % (RESPONSE_LENGTH, RESPONSE_DATA)
 
 def on_read(stream, data):
     stream.write(RESPONSE, stream.bench_write_done)
