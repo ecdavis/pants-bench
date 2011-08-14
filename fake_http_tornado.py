@@ -17,14 +17,12 @@ import socket
 
 from tornado import ioloop, iostream
 
-RESPONSE_DATA = "Hello, World!" * 512
+RESPONSE_DATA = "0123456789" * 2048
 RESPONSE_LENGTH = len(RESPONSE_DATA)
 RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s\r\n" % (RESPONSE_LENGTH, RESPONSE_DATA)
 
 def on_read(stream, data):
-    read_done = functools.partial(on_read, stream)
-    write_done = functools.partial(stream.read_until, '\r\n\r\n', read_done)
-    stream.write(RESPONSE, write_done)
+    stream.write(RESPONSE, stream.bench_write_done)
 
 def on_accept(sock, fd, events):
     while True:
@@ -36,7 +34,9 @@ def on_accept(sock, fd, events):
             return
         connection.setblocking(0)
         stream = iostream.IOStream(connection)
-        stream.read_until('\r\n\r\n', functools.partial(on_read, stream))
+        stream.bench_read_done = functools.partial(on_read, stream)
+        stream.bench_write_done = functools.partial(stream.read_until, '\r\n\r\n', stream.bench_read_done)
+        stream.read_until('\r\n\r\n', stream.bench_read_done)
 
 if __name__ == '__main__':
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
