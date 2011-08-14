@@ -8,27 +8,29 @@ measure a framework's performance without involving the HTTP stack.
 
 import eventlet
 
+RESPONSE_DATA = "0123456789" * 1
+RESPONSE_LENGTH = len(RESPONSE_DATA)
+RESPONSE = "HTTP/1.1 200 OK\r\nContent-Length: %d\r\n\r\n%s" % (RESPONSE_LENGTH, RESPONSE_DATA)
+
 def on_connect(sock):
     buf = ''
     while True:
         while '\r\n\r\n' not in buf:
-            data = sock.readline()
+            data = sock.recv(4096)
             if not data:
-                sock.close()
-                return
+                return sock.close()
             buf += data
+        buf = ''
         try:
-            sock.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, World!\r\n")
-            sock.flush()
+            sock.sendall(RESPONSE)
         except:
-            break
-    sock.close()
+            return sock.close()
 
 server = eventlet.listen(('', 8080))
 pool = eventlet.GreenPool()
 while True:
     try:
         sock, addr = server.accept()
-        pool.spawn_n(on_connect, sock.makefile('rw'))
+        pool.spawn_n(on_connect, sock)
     except (SystemExit, KeyboardInterrupt):
         break
