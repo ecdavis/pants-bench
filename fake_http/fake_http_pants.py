@@ -17,7 +17,7 @@ class FakeHTTP(Connection):
         self.read_delimiter = '\r\n\r\n'
 
     def on_read(self, data):
-        self.write(RESPONSE)
+        self.write(RESPONSE, flush=True)
 
 Server(FakeHTTP).listen(8080)
 engine.start()
